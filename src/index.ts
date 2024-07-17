@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import { signUpRouter } from "./routes/signup.ts";
@@ -7,6 +7,7 @@ import { updateTodoRouter } from "./routes/updateTodo.ts";
 import { getTodoRouter } from "./routes/getTodos.ts";
 import { deleteTodoRouter } from "./routes/deleteTodo.ts";
 import { addTodoRouter } from "./routes/addTodo.ts";
+import { authChecker } from "./routes/verifyUser.ts";
 
 const corsOptions = {
   origin: "*",
@@ -37,13 +38,21 @@ mongoose.connection.on("error", () => {
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
-
 app.use("/signup", signUpRouter);
-app.use("/login" , loginRouter)
-app.use("/todos/", updateTodoRouter)
-app.use("/todos/", deleteTodoRouter)
-app.use("/todos", getTodoRouter)
-app.use("/todos" , addTodoRouter)
+app.use("/login", loginRouter);
+
+const routersWithAuthChecker = Router();
+routersWithAuthChecker.use(authChecker);
+routersWithAuthChecker.use("/todos/", updateTodoRouter);
+routersWithAuthChecker.use("/todos/", deleteTodoRouter);
+routersWithAuthChecker.use("/todos", getTodoRouter);
+routersWithAuthChecker.use("/todos", addTodoRouter);
+app.use("/api", routersWithAuthChecker);
+
+// app.use("/todos/", updateTodoRouter)
+// app.use("/todos/", deleteTodoRouter)
+// app.use("/todos", getTodoRouter)
+// app.use("/todos" , addTodoRouter)
 
 app.listen(PORT, () => console.log("server runnin"));
 

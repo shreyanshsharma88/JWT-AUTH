@@ -7,14 +7,15 @@ export const addTodoRouter = Router();
 addTodoRouter.post("/", async (req: Request, res: Response) => {
   try {
     const headers = req.headers;
-    const { message, status, user } = await verifyUser({
-      userId: headers["user-id"] as string,
-    });
-    if (!status) {
-      return res.status(400).send({
-        message,
-      });
-    }
+    // const { message, status, user } = await verifyUser({
+    //   userId: headers["user-id"] as string,
+    // });
+    const {user} = req.body
+    // if (!status) {
+    //   return res.status(400).send({
+    //     message,
+    //   });
+    // }
     const { label, priority } = req.body;
     const todoId = uuid();
     user?.todos.push({ label, priority,  todoId });

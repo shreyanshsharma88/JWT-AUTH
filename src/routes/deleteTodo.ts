@@ -7,13 +7,16 @@ export const deleteTodoRouter = Router();
 deleteTodoRouter.delete("/:todoId", async (req: Request, res: Response) => {
   try {
     const headers = req.headers;
-    const { message, status, user } = await verifyUser({
-      userId: headers["user-id"] as string,
-    });
+    const { todoId } = req.params;
+    // const { message, status, user } = await verifyUser({
+    //   userId: headers["user-id"] as string,
+    //   todoId
+    // });
+    const {user} = req.body
 
-    if (!status) {
-      return res.status(400).send({ message });
-    }
+    // if (!status) {
+    //   return res.status(400).send({ message });
+    // }
 
     if (!user) {
       return res.status(400).send({
@@ -21,7 +24,6 @@ deleteTodoRouter.delete("/:todoId", async (req: Request, res: Response) => {
       });
     }
 
-    const { todoId } = req.params;
     console.log({
         params: req.params
     });
@@ -33,7 +35,7 @@ deleteTodoRouter.delete("/:todoId", async (req: Request, res: Response) => {
       });
     }
 
-    const updatedTodos = user.todos.filter((todo) => todo.todoId !== todoId);
+    const updatedTodos = user.todos.filter((todo:any) => todo.todoId !== todoId);
 
     if (updatedTodos.length === user.todos.length) {
       return res.status(400).send({
@@ -41,7 +43,7 @@ deleteTodoRouter.delete("/:todoId", async (req: Request, res: Response) => {
       });
     }
 
-    const deleteId = user?.todos?.find((todo) => todo.todoId=== todoId)?._id;
+    const deleteId = user?.todos?.find((todo: any) => todo.todoId=== todoId)?._id;
 
     user.todos.pull(deleteId)
     await user.save();
