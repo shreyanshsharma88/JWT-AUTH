@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UserModel } from "../models/todo";
+import jsonWebToken from "jsonwebtoken";
 
 export const verifyUser = async ({
   userId,
@@ -48,17 +49,24 @@ export const authChecker = async (
   next: NextFunction
 ) => {
   try {
-    const { message, status, user } = await verifyUser({
-      userId: req.headers["user-id"] as string,
-      todoId: (req as Request).params.todoId,
-    });
-
-    if (status) {
-      req.body.user = user;
-      next();
-    } else {
-      res.status(400).send({ message });
+    const token = req.headers["token"] as string;
+    if (!token) {
+      return res.status(400).send({ message: "Token is required" });
     }
+    jsonWebToken.verify(
+      token,
+      process.env.SECRET_KEY as string,
+      async (err, user: any) => {
+        if (err) {
+          return res.status(400).send({ message: "Invalid Token" });
+        }
+        const userObject = await UserModel.findOne({ userId: user?.userid  });
+
+        req.body.user = userObject;
+        next();
+        return user;
+      }
+    );
   } catch (err) {
     res.status(500).send({ message: "server error" });
   }

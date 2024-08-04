@@ -49,11 +49,6 @@ routersWithAuthChecker.use("/todos", getTodoRouter);
 routersWithAuthChecker.use("/todos", addTodoRouter);
 app.use("/api", routersWithAuthChecker);
 
-// app.use("/todos/", updateTodoRouter)
-// app.use("/todos/", deleteTodoRouter)
-// app.use("/todos", getTodoRouter)
-// app.use("/todos" , addTodoRouter)
-
 app.listen(PORT, () => console.log("server runnin"));
 
 export default app;
